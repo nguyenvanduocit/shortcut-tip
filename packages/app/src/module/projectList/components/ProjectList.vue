@@ -27,5 +27,7 @@ const isEmpty = computed(() => Object.keys(projects.value).length === 0)
 <style lang="stylus" module>
 .grid
   display grid
-  grid-auto-columns: max-content;
+  grid-auto-flow: column
+  grid-auto-columns min-content
+  grid-gap 10px
 </style>
