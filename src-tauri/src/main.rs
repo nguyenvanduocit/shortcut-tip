@@ -5,7 +5,7 @@
 
 
 use tauri::{Manager, PhysicalPosition, PhysicalSize, RunEvent, WindowEvent, Window};
-use tauri_plugin_store::PluginBuilder;
+use tauri_plugin_store::{PluginBuilder, StoreBuilder};
 use tauri_plugin_autostart::MacosLauncher;
 use tokio::sync::mpsc;
 use device_query::{DeviceEvents, DeviceState};
@@ -18,6 +18,7 @@ const KEYCODE_LCONTROL: i32 = 2;
 const KEYCODE_LALT: i32 = 4;
 const KEYCODE_LSHIFT: i32 = 8;
 const KEYCODE_META: i32 = 16;
+const KEYCODE_COMMAND: i32 = 32;
 
 #[tokio::main]
 async fn main() {
@@ -51,7 +52,6 @@ async fn main() {
                         main_window.show().unwrap();
                         main_window.set_focus().unwrap();
                     }
-
                     "settings" => {
                         main_window.emit("router::push", "/settings").unwrap();
 
@@ -132,6 +132,10 @@ async fn main() {
                     let mut current_state = 0;
                     let mut is_show = false;
                     let viewer_window = new_handler.get_window("viewer").unwrap();
+
+                    // get store from manage state
+                    let store = app.state::<StoreCollection>();
+
 
                     loop {
                         if let Some(value) = rx.recv().await {
