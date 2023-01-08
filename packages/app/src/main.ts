@@ -3,7 +3,6 @@ import App from "./App.vue";
 import {router} from "./route";
 import projectListModule from './module/projectList'
 import shell from '@aiocean/shell'
-import './styles/main.styl'
 
 const app =createApp(App)
 app.use(shell)

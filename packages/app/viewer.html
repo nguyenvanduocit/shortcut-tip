@@ -3,12 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Splash</title>
+    <title>Viewer</title>
   </head>
 
-  <body>
-    <div id="app">
-        loading
-    </div>
+  <body oncontextmenu="return false;">
+    <div id="app" data-tauri-drag-region></div>
+    <script type="module" src="/src/viewer.ts"></script>
   </body>
 </html>

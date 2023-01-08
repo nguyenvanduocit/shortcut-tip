@@ -7,7 +7,7 @@
     "withGlobalTauri": false
   },
   "package": {
-    "productName": "git-dirty",
+    "productName": "shortcut-tip",
     "version": "0.0.0"
   },
   "tauri": {
@@ -85,13 +85,11 @@
         "fullscreen": false,
         "height": 600,
         "resizable": true,
-        "title": "Git Dirty",
+        "title": "Shortcut Tip",
         "width": 800,
         "skipTaskbar": true,
         "visible": false,
-        "label": "main",
-        "decorations": false,
-        "transparent": true
+        "label": "main"
       },
       {
         "width": 400,
@@ -99,7 +97,18 @@
         "decorations": false,
         "center": true,
         "url": "splash.html",
-        "label": "splashscreen"
+        "label": "splashscreen",
+        "alwaysOnTop": true
+      },
+      {
+        "width": 550,
+        "height": 90,
+        "decorations": false,
+        "visible": false,
+        "center": true,
+        "transparent": true,
+        "url": "viewer.html",
+        "label": "viewer"
       }
     ]
   }

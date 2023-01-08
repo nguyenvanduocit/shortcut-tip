@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import {NavSidebar, AppMenuBar, useUnListen} from '@aiocean/shell'
 import {setMenus} from "@aiocean/shell/src/sidebar/store";
-import {computed, onMounted, onUnmounted} from "vue";
-import {emit, listen} from "@tauri-apps/api/event";
-import {useRoute} from "vue-router";
+import {onMounted} from "vue";
+import {emit} from "@tauri-apps/api/event";
+import {useListen} from "@aiocean/shell/src/composable/useListen";
+import {useRoute, useRouter} from "vue-router";
 setMenus([
   {
     id: 'definition',
@@ -15,6 +16,12 @@ setMenus([
 
 onMounted(async () => {
   await emit("main::loaded")
+})
+
+const router = useRouter()
+
+useListen<string>("router::push", (e) => {
+  router.push(e.payload);
 })
 
 </script>
