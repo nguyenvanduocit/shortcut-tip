@@ -12,7 +12,6 @@
     "@aiocean/shell": "workspace:*",
     "@tauri-apps/api": "^1.2.0",
     "@vueuse/core": "^9.9.0",
-    "tauri-plugin-store-api": "github:tauri-apps/tauri-plugin-store#dev",
     "vue": "^3.2.45",
     "vue-router": "4"
   },

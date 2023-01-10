@@ -8,5 +8,14 @@ declare module "*.vue" {
 
 declare interface Shortcut {
   keystroke: string;
+  mods: string[];
   title: string;
+}
+
+declare interface ModState {
+  ctrl: boolean;
+  shift: boolean;
+  alt: boolean;
+  meta: boolean;
+  shift: boolean;
 }

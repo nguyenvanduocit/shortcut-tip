@@ -1,40 +1,55 @@
 <script setup lang="ts">
 import {useListen} from "@aiocean/shell/src/composable/useListen";
-import {ref} from "vue";
+import {computed, ref} from "vue";
 
-//const projects = store.projects
-const projects = [
+const shortcuts = [
   {
     title: "Alfred App",
-    keystroke: ["ctrl", "shift", "P"],
+    mods: ["ctrl", "shift"],
+    keystroke: ["P"],
   },
   {
     title: "Build Terraform",
-    keystroke: ["ctrl", "shift", "B"],
+    mods: ["ctrl", "meta"],
+    keystroke: ["B"],
   },
   {
     title: "Goland",
-    keystroke: ["ctrl", "shift", "A"],
+    mods: ["ctrl", "shift"],
+    keystroke: ["A"],
   }
 ]
 
-const shortcuts = ref<Shortcut[]|undefined>()
+const modState = ref<ModState|undefined>()
 
-useListen<Shortcut[]>('shortcuts', (event) => {
-  shortcuts.value = event.payload
+useListen<ModState>('shortcuts', (event) => {
+  modState.value = event.payload
+})
+
+const filteredShortcuts = computed(() => {
+  if (!modState.value) {
+    return shortcuts
+  }
+
+  return shortcuts.filter((shortcut) => {
+    return shortcut.mods.every((mod) => {
+      return (mod === "meta" && modState.value?.meta) || (mod === "ctrl" && modState.value?.ctrl) || (mod === "shift" && modState.value?.shift) || (mod === "alt" && modState.value?.alt)
+
+    })
+  })
 })
 </script>
 
 <template>
   <div :class="$style.grid">
-    <div v-for="project in projects" :class="$style.item">
+    <div v-for="shortcut in filteredShortcuts" :class="$style.item">
       <div :class="$style.kbds">
         <kbd :class="$style.kbd">
-          {{ project.keystroke[project.keystroke.length-1] }}
+          {{ shortcut.keystroke[shortcut.keystroke.length-1] }}
         </kbd>
       </div>
         <div :class="$style.title">
-          {{project.title}}
+          {{shortcut.title}}
         </div>
     </div>
   </div>
