@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {useListen} from "@aiocean/shell/src/composable/useListen";
-import {computed, ref} from "vue";
+import {computed, ref, watch} from "vue";
+import {invoke} from "@tauri-apps/api";
 
 const shortcuts = [
   {
@@ -26,18 +27,34 @@ useListen<ModState>('shortcuts', (event) => {
   modState.value = event.payload
 })
 
+
+
 const filteredShortcuts = computed(() => {
   if (!modState.value) {
     return shortcuts
   }
 
   return shortcuts.filter((shortcut) => {
+    
     return shortcut.mods.every((mod) => {
       return (mod === "meta" && modState.value?.meta) || (mod === "ctrl" && modState.value?.ctrl) || (mod === "shift" && modState.value?.shift) || (mod === "alt" && modState.value?.alt)
 
     })
   })
 })
+
+const hasShortcuts = computed(() => {
+  return filteredShortcuts.value.length > 0
+})
+
+watch(hasShortcuts, (value) => {
+  if (value) {
+    invoke('show_viewer')
+  } else {
+    invoke('hide_viewer')
+  }
+})
+
 </script>
 
 <template>

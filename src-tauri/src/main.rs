@@ -26,6 +26,18 @@ struct ModState {
     meta: bool,
 }
 
+#[tauri::command]
+fn show_viewer(window: tauri::Window<Wry>) {
+    window.show().unwrap();
+    window.set_always_on_top(true).unwrap();
+}
+
+#[tauri::command]
+fn hide_viewer(window: tauri::Window<Wry>) {
+    window.hide().unwrap();
+    window.set_always_on_top(false).unwrap();
+}
+
 #[tokio::main]
 async fn main() {
 
@@ -85,7 +97,7 @@ async fn main() {
             Ok(())
         })
         .enable_macos_default_menu(true)
-        .invoke_handler(tauri::generate_handler![])
+        .invoke_handler(tauri::generate_handler![show_viewer, hide_viewer])
         .on_window_event(move |event| match event.event() {
             tauri::WindowEvent::CloseRequested { api, .. } => {
                 if event.window().label() == "main" {
@@ -146,15 +158,10 @@ async fn main() {
                         is_mod = keycodes.shift || keycodes.alt || keycodes.ctrl || keycodes.meta;
 
                         if is_mod {
-                            viewer_window.show().unwrap();
-                            viewer_window.set_always_on_top(true).unwrap();
-
                             viewer_window.emit(
                                 "shortcuts",
                                 keycodes.clone()
                             ).unwrap();
-                        } else {
-                            viewer_window.hide().unwrap();
                         }
                     }
                 });
