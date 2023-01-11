@@ -5,19 +5,29 @@ import {invoke} from "@tauri-apps/api";
 
 const shortcuts = [
   {
-    title: "Alfred App",
-    mods: ["ctrl", "shift"],
-    keystroke: ["P"],
+    title: "Alfred",
+    mods: ["ctrl", "shift", "alt"],
+    keystroke: ["A"],
   },
   {
     title: "Build Terraform",
-    mods: ["ctrl", "meta"],
+    mods: ["ctrl", "shift", "alt"],
     keystroke: ["B"],
   },
   {
     title: "Goland",
-    mods: ["ctrl", "shift"],
-    keystroke: ["A"],
+    mods: ["ctrl", "shift", "alt"],
+    keystroke: ["G"],
+  },
+  {
+    title: "Warp",
+    mods: ["ctrl", "shift", "alt"],
+    keystroke: ["W"],
+  },
+  {
+    title: "Lock",
+    mods: ["ctrl", "shift", "alt"],
+    keystroke: ["L"],
   }
 ]
 
