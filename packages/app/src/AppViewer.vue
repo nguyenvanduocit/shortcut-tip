@@ -38,7 +38,6 @@ useListen<ModState>('shortcuts', (event) => {
 })
 
 
-
 const filteredShortcuts = computed(() => {
   if (!modState.value) {
     return shortcuts

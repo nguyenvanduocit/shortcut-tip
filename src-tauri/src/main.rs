@@ -6,7 +6,7 @@
 use tauri::{Manager, PhysicalPosition, PhysicalSize, RunEvent, WindowEvent, Window};
 use tauri_plugin_autostart::MacosLauncher;
 use tokio::sync::mpsc;
-use device_query::{DeviceEvents, DeviceState, Keycode};
+use device_query::{DeviceEvents, DeviceState, Keycode, DeviceQuery};
 use tauri::{CustomMenuItem, SystemTray, SystemTrayMenu, SystemTrayEvent, Wry};
 use tauri::Size::Physical;
 use window_vibrancy::{apply_blur, apply_vibrancy, NSVisualEffectMaterial};
@@ -118,17 +118,19 @@ async fn main() {
 
                     let device_state = DeviceState::new();
 
-                    let (tx, mut rx) = mpsc::channel::<Keycode>(3);
+                    let (tx, mut rx) = mpsc::channel::<Keycode>(1);
 
                     let keydown_tx = tx.clone();
-                    let _guard = device_state.on_key_down( move |key| {
+                    /*let _guard = device_state.on_key_down( move |key| {
+                        println!("Key down: {:?}", key);
                         keydown_tx.try_send(*key).unwrap();
-                    });
+                    });*/
 
                     let keyup_tx = tx.clone();
-                    let _guard = device_state.on_key_up( move |key| {
+                   /*let _guard = device_state.on_key_up( move |key| {
+                        println!("Key up: {:?}", key);
                         keyup_tx.try_send(*key).unwrap();
-                    });
+                    });*/
 
                     let mut is_mod = false;
                     let viewer_window = new_handler.get_window("viewer").unwrap();
@@ -140,29 +142,45 @@ async fn main() {
                         meta: false,
                     };
 
+                    let mut prev_keys = vec![];
+
                     loop {
 
-
-                        if let Some(value) = rx.recv().await {
-                            if value == Keycode::LControl {
-                                keycodes.ctrl = !keycodes.ctrl;
-                            } else if value == Keycode::LAlt {
-                                keycodes.alt = !keycodes.alt;
-                            } else if value == Keycode::LShift {
-                                keycodes.shift = !keycodes.shift;
-                            } else if value == Keycode::Meta {
-                                keycodes.meta = !keycodes.meta;
+                        let keys = device_state.get_keys();
+                        if keys != prev_keys {
+                            if keys.contains(&Keycode::LControl) {
+                                keycodes.ctrl = true;
+                            } else {
+                                keycodes.ctrl = false;
                             }
-                        }
 
-                        is_mod = keycodes.shift || keycodes.alt || keycodes.ctrl || keycodes.meta;
+                            if keys.contains(&Keycode::LAlt) {
+                                keycodes.alt = true;
+                            } else {
+                                keycodes.alt = false;
+                            }
 
-                        if is_mod {
+                            if keys.contains(&Keycode::LShift) {
+                                keycodes.shift = true;
+                            } else {
+                                keycodes.shift = false;
+                            }
+
+                            if keys.contains(&Keycode::Meta) {
+                                keycodes.meta = true;
+                            } else {
+                                keycodes.meta = false;
+                            }
+
                             viewer_window.emit(
                                 "shortcuts",
                                 keycodes.clone()
                             ).unwrap();
+
+                            prev_keys = keys;
                         }
+
+                        tokio::time::sleep(std::time::Duration::from_millis(400)).await;
                     }
                 });
             }
