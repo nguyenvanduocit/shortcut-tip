@@ -12,20 +12,6 @@ use tauri::Size::Physical;
 use window_vibrancy::{apply_blur, apply_vibrancy, NSVisualEffectMaterial};
 use window_vibrancy::NSVisualEffectState::Active;
 
-const KEYCODE_LCONTROL: i32 = 2;
-const KEYCODE_LALT: i32 = 4;
-const KEYCODE_LSHIFT: i32 = 8;
-const KEYCODE_META: i32 = 16;
-
-// event keycodes struct
-#[derive(Clone, serde::Serialize)]
-struct ModState {
-    ctrl: bool,
-    alt: bool,
-    shift: bool,
-    meta: bool,
-}
-
 #[tauri::command]
 fn show_viewer(window: tauri::Window<Wry>) {
     window.show().unwrap();
@@ -118,21 +104,6 @@ async fn main() {
 
                     let device_state = DeviceState::new();
 
-                    let (tx, mut rx) = mpsc::channel::<Keycode>(1);
-
-                    let keydown_tx = tx.clone();
-                    /*let _guard = device_state.on_key_down( move |key| {
-                        println!("Key down: {:?}", key);
-                        keydown_tx.try_send(*key).unwrap();
-                    });*/
-
-                    let keyup_tx = tx.clone();
-                   /*let _guard = device_state.on_key_up( move |key| {
-                        println!("Key up: {:?}", key);
-                        keyup_tx.try_send(*key).unwrap();
-                    });*/
-
-                    let mut is_mod = false;
                     let viewer_window = new_handler.get_window("viewer").unwrap();
 
                     let mut keycodes = ModState {
@@ -143,39 +114,29 @@ async fn main() {
                     };
 
                     let mut prev_keys = vec![];
+                    let mut is_mod = false;
 
                     loop {
 
                         let keys = device_state.get_keys();
                         if keys != prev_keys {
-                            if keys.contains(&Keycode::LControl) {
-                                keycodes.ctrl = true;
-                            } else {
-                                keycodes.ctrl = false;
-                            }
 
-                            if keys.contains(&Keycode::LAlt) {
-                                keycodes.alt = true;
-                            } else {
-                                keycodes.alt = false;
-                            }
+                            if keys.iter().any(|key| {
+                                
+                                match key {
+                                    Keycode::LControl | Keycode::RControl | Keycode::LAlt | Keycode::RAlt | Keycode::LShift | Keycode::RShift |  Keycode::Meta=> {
+                                        true
+                                    }
+                                    _ => {}
+                                }
 
-                            if keys.contains(&Keycode::LShift) {
-                                keycodes.shift = true;
-                            } else {
-                                keycodes.shift = false;
+                                false
+                            }) {
+                                viewer_window.emit(
+                                    "shortcuts",
+                                    keys.iter().map(|key| key.to_string()).collect::<Vec<String>>(),
+                                ).unwrap();
                             }
-
-                            if keys.contains(&Keycode::Meta) {
-                                keycodes.meta = true;
-                            } else {
-                                keycodes.meta = false;
-                            }
-
-                            viewer_window.emit(
-                                "shortcuts",
-                                keycodes.clone()
-                            ).unwrap();
 
                             prev_keys = keys;
                         }
